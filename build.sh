@@ -21,7 +21,7 @@ if [ -z "${NUM_CORES}" ]; then
   export NUM_CORES=16
 fi
 
-registry="${REGISTRY}"
+registry="${REGISTRY:-localhost}"
 username=""
 password=""
 godot_version=""
@@ -193,25 +193,25 @@ export podman_run="${podman} run --rm --env BUILD_NAME --env GODOT_VERSION_STATU
 export img_version=4.x-f36
 
 mkdir -p ${basedir}/mono-glue
-${podman_run} -v ${basedir}/build-mono-glue:/root/build localhost/godot-linux:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/mono-glue
+${podman_run} -v ${basedir}/build-mono-glue:/root/build ${registry}/godot-linux:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/mono-glue
 
 mkdir -p ${basedir}/out/windows
-${podman_run} -v ${basedir}/build-windows:/root/build -v ${basedir}/out/windows:/root/out localhost/godot-windows:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/windows
+${podman_run} -v ${basedir}/build-windows:/root/build -v ${basedir}/out/windows:/root/out ${registry}/godot-windows:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/windows
 
 mkdir -p ${basedir}/out/linux
-${podman_run} -v ${basedir}/build-linux:/root/build -v ${basedir}/out/linux:/root/out localhost/godot-linux:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/linux
+${podman_run} -v ${basedir}/build-linux:/root/build -v ${basedir}/out/linux:/root/out ${registry}/godot-linux:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/linux
 
 mkdir -p ${basedir}/out/web
-${podman_run} -v ${basedir}/build-web:/root/build -v ${basedir}/out/web:/root/out localhost/godot-web:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/web
+${podman_run} -v ${basedir}/build-web:/root/build -v ${basedir}/out/web:/root/out ${registry}/godot-web:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/web
 
 mkdir -p ${basedir}/out/macos
-${podman_run} -v ${basedir}/build-macos:/root/build -v ${basedir}/out/macos:/root/out -v ${basedir}/deps/vulkansdk-macos:/root/vulkansdk localhost/godot-osx:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/macos
+${podman_run} -v ${basedir}/build-macos:/root/build -v ${basedir}/out/macos:/root/out -v ${basedir}/deps/vulkansdk-macos:/root/vulkansdk ${registry}/godot-osx:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/macos
 
 mkdir -p ${basedir}/out/android
-${podman_run} -v ${basedir}/build-android:/root/build -v ${basedir}/out/android:/root/out localhost/godot-android:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/android
+${podman_run} -v ${basedir}/build-android:/root/build -v ${basedir}/out/android:/root/out ${registry}/godot-android:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/android
 
 mkdir -p ${basedir}/out/ios
-${podman_run} -v ${basedir}/build-ios:/root/build -v ${basedir}/out/ios:/root/out localhost/godot-ios:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/ios
+${podman_run} -v ${basedir}/build-ios:/root/build -v ${basedir}/out/ios:/root/out ${registry}/godot-ios:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/ios
 
 #mkdir -p ${basedir}/out/uwp
 #${podman_run} --ulimit nofile=32768:32768 -v ${basedir}/build-uwp:/root/build -v ${basedir}/out/uwp:/root/out ${registry}/godot-private/uwp:latest bash build/build.sh 2>&1 | tee ${basedir}/out/logs/uwp
