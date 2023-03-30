@@ -31,8 +31,9 @@ build_mono=1
 force_download=0
 skip_download=1
 skip_git_checkout=0
+force_yes=0
 
-while getopts "h?r:u:p:v:g:b:fsc" opt; do
+while getopts "h?r:u:p:v:g:b:fscy" opt; do
   case "$opt" in
   h|\?)
     echo "Usage: $0 [OPTIONS...]"
@@ -46,6 +47,7 @@ while getopts "h?r:u:p:v:g:b:fsc" opt; do
     echo "  -f force redownload of all images"
     echo "  -s skip downloading"
     echo "  -c skip checkout"
+    echo "  -y yes"
     echo
     exit 1
     ;;
@@ -80,6 +82,9 @@ while getopts "h?r:u:p:v:g:b:fsc" opt; do
   c)
     skip_git_checkout=1
     ;;
+  y)
+    force_yes=1
+    ;;
   esac
 done
 
@@ -105,13 +110,15 @@ if [ -z "${godot_version}" ]; then
 fi
 
 IFS=- read version status <<< "$godot_version"
-echo "Building Godot ${version} ${status} from commit or branch ${git_treeish}."
-read -p "Is this correct (y/n)? " choice
-case "$choice" in
-  y|Y ) echo "yes";;
-  n|N ) echo "No, aborting."; exit 0;;
-  * ) echo "Invalid choice, aborting."; exit 1;;
-esac
+echo "Building Godot '${version} ${status}' from commit or branch '${git_treeish}'."
+if [ -q $force_yes 0 ]; then
+  read -p "Is this correct (y/n)? " choice
+  case "$choice" in
+    y|Y ) echo "yes";;
+    n|N ) echo "No, aborting."; exit 0;;
+    * ) echo "Invalid choice, aborting."; exit 1;;
+  esac
+fi
 export GODOT_VERSION_STATUS="${status}"
 
 if [ ! -z "${username}" ] && [ ! -z "${password}" ]; then
