@@ -1,0 +1,14 @@
+name: GHA
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - run: ./build.sh -v 4.1-tip -g master -y
