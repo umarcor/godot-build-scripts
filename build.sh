@@ -21,7 +21,7 @@ if [ -z "${NUM_CORES}" ]; then
   export NUM_CORES=16
 fi
 
-registry="${REGISTRY:-localhost}"
+registry="${REGISTRY:-ghcr.io/godotengine/build}"
 username=""
 password=""
 godot_version=""
@@ -196,7 +196,7 @@ run_build() {
   mkdir -p ${basedir}/$2
   ${podman_run} \
     "${@:3}" \
-    ${registry}/godot-"$1":${img_version} \
+    ${registry}/"$1":${img_version} \
     bash build/build.sh 2>&1 \
     | tee ${basedir}/out/logs/mono-glue
 }
