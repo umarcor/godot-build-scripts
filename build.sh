@@ -32,6 +32,7 @@ force_download=0
 skip_download=1
 skip_git_checkout=0
 force_yes=0
+build_mac=0
 
 while getopts "h?r:u:p:v:g:b:fscy" opt; do
   case "$opt" in
@@ -111,7 +112,7 @@ fi
 
 IFS=- read version status <<< "$godot_version"
 echo "Building Godot '${version} ${status}' from commit or branch '${git_treeish}'."
-if [ -q $force_yes 0 ]; then
+if [ $force_yes -eq 0 ]; then
   read -p "Is this correct (y/n)? " choice
   case "$choice" in
     y|Y ) echo "yes";;
@@ -184,21 +185,27 @@ EOF
   popd
 fi
 
-export basedir="$(pwd)"
-mkdir -p ${basedir}/out
-mkdir -p ${basedir}/out/logs
-mkdir -p ${basedir}/mono-glue
-
-export podman_run="${podman} run --rm --env BUILD_NAME --env GODOT_VERSION_STATUS --env NUM_CORES --env CLASSICAL=${build_classical} --env MONO=${build_mono} -v ${basedir}/godot-${godot_version}.tar.gz:/root/godot.tar.gz -v ${basedir}/mono-glue:/root/mono-glue -w /root/"
-export img_version=4.x-f36
+basedir="$(pwd)"
+mkdir -vp ${basedir}/out
+mkdir -vp ${basedir}/out/logs
+mkdir -vp ${basedir}/mono-glue
 
 run_build() {
-  mkdir -p ${basedir}/$2
-  ${podman_run} \
+  echo "· Build $@"
+  mkdir -p ${basedir}/out/$2
+  ${podman} run --rm \
+    --env BUILD_NAME \
+    --env GODOT_VERSION_STATUS \
+    --env NUM_CORES \
+    --env CLASSICAL=${build_classical} \
+    --env MONO=${build_mono} \
+    -v ${basedir}/godot-${godot_version}.tar.gz:/root/godot.tar.gz \
+    -v ${basedir}/mono-glue:/root/mono-glue \
+    -w /root/ \
     "${@:3}" \
-    ${registry}/"$1":${img_version} \
+    ${registry}/build/"$1":4.x \
     bash build/build.sh 2>&1 \
-    | tee ${basedir}/out/logs/mono-glue
+    | tee ${basedir}/out/logs/$2
 }
 
 run_build linux mono-glue \
@@ -216,18 +223,20 @@ run_build web web \
   -v ${basedir}/build-web:/root/build \
   -v ${basedir}/out/web:/root/out
 
-run_build osx macos \
-  -v ${basedir}/build-macos:/root/build \
-  -v ${basedir}/out/macos:/root/out \
-  -v ${basedir}/deps/vulkansdk-macos:/root/vulkansdk
-
 run_build android android \
   -v ${basedir}/build-android:/root/build \
   -v ${basedir}/out/android:/root/out
 
-run_build ios ios \
-  -v ${basedir}/build-ios:/root/build \
-  -v ${basedir}/out/ios:/root/out
+if [ ${build_mac} -ne 0 ]; then
+  run_build osx macos \
+    -v ${basedir}/build-macos:/root/build \
+    -v ${basedir}/out/macos:/root/out \
+    -v ${basedir}/deps/vulkansdk-macos:/root/vulkansdk
+
+  run_build ios ios \
+    -v ${basedir}/build-ios:/root/build \
+    -v ${basedir}/out/ios:/root/out
+fi
 
 #mkdir -p ${basedir}/out/uwp
 #${podman_run} --ulimit nofile=32768:32768 -v ${basedir}/build-uwp:/root/build -v ${basedir}/out/uwp:/root/out ${registry}/godot-private/uwp:latest bash build/build.sh 2>&1 | tee ${basedir}/out/logs/uwp

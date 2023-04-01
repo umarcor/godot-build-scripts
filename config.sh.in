@@ -9,7 +9,7 @@
 # contributors.
 # You can build your own registry with scripts at
 # https://github.com/godotengine/build-containers
-export REGISTRY="registry.prehensile-tales.com"
+export REGISTRY="${REGISTRY:-registry.prehensile-tales.com}"
 
 # Default build name used to distinguish between official and custom builds.
 export BUILD_NAME="custom_build"
