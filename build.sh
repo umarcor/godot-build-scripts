@@ -211,21 +211,29 @@ run_build() {
 run_build linux mono-glue \
   -v ${basedir}/build-mono-glue:/root/build
 
-run_build windows windows \
-  -v ${basedir}/build-windows:/root/build \
-  -v ${basedir}/out/windows:/root/out
+if [ ! -z "$GODOT_WINDOWS" ]; then
+  run_build windows windows \
+    -v ${basedir}/build-windows:/root/build \
+    -v ${basedir}/out/windows:/root/out
+fi
 
-run_build linux linux \
-  -v ${basedir}/build-linux:/root/build \
-  -v ${basedir}/out/linux:/root/out
+if [ ! -z "$GODOT_LINUX" ]; then
+  run_build linux linux \
+    -v ${basedir}/build-linux:/root/build \
+    -v ${basedir}/out/linux:/root/out
+fi
 
-run_build web web \
-  -v ${basedir}/build-web:/root/build \
-  -v ${basedir}/out/web:/root/out
+if [ ! -z "$GODOT_WEB" ]; then
+  run_build web web \
+    -v ${basedir}/build-web:/root/build \
+    -v ${basedir}/out/web:/root/out
+fi
 
-run_build android android \
-  -v ${basedir}/build-android:/root/build \
-  -v ${basedir}/out/android:/root/out
+if [ ! -z "$GODOT_ANDROID" ]; then
+  run_build android android \
+    -v ${basedir}/build-android:/root/build \
+    -v ${basedir}/out/android:/root/out
+fi
 
 if [ ${build_mac} -ne 0 ]; then
   run_build osx macos \

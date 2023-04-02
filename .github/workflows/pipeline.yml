@@ -6,11 +6,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - WINDOWS
+          - LINUX
+          - WEB
+          - ANDROID
 
     steps:
 
       - uses: actions/checkout@v3
 
-      - run: REGISTRY=ghcr.io/umarcor/godot ./build.sh -v 4.1-tip -g master -y
+      - run: GODOT_${{ matrix.platform }}=true REGISTRY=ghcr.io/umarcor/godot ./build.sh -v 4.1-tip -g master -y
 
       - run: tree out
