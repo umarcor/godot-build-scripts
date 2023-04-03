@@ -186,7 +186,7 @@ EOF
 fi
 
 basedir="$(pwd)"
-mkdir -vp ${basedir}/out
+mkdir -vp ${basedir}/.scons-cache
 mkdir -vp ${basedir}/out/logs
 mkdir -vp ${basedir}/mono-glue
 
@@ -201,6 +201,7 @@ run_build() {
     --env MONO=${build_mono} \
     -v ${basedir}/godot-${godot_version}.tar.gz:/root/godot.tar.gz \
     -v ${basedir}/mono-glue:/root/mono-glue \
+    -v ${basedir}/.scons-cache:/root/.scons-cache \
     -w /root/ \
     "${@:3}" \
     ${registry}/build/"$1":4.x \
