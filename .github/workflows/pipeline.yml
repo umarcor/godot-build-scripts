@@ -35,3 +35,4 @@ jobs:
           ./build.sh -v 4.1-tip -g master -y
 
       - run: tree out
+        if: always()
