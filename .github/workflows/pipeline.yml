@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Load .scons_cache directory
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           path: .scons-cache
           key: ${{matrix.platform}}-${{github.ref}}-${{github.sha}}
@@ -36,3 +36,9 @@ jobs:
 
       - run: tree out
         if: always()
+
+      - uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: .scons-cache
+          key: ${{matrix.platform}}-${{github.ref}}-${{github.sha}}
