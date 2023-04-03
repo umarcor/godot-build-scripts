@@ -194,11 +194,12 @@ run_build() {
   echo "· Build $@"
   mkdir -p ${basedir}/out/$2
   ${podman} run --rm \
-    --env BUILD_NAME \
-    --env GODOT_VERSION_STATUS \
-    --env NUM_CORES \
-    --env CLASSICAL=${build_classical} \
-    --env MONO=${build_mono} \
+    -e BUILD_NAME \
+    -e GODOT_VERSION_STATUS \
+    -e NUM_CORES \
+    -e CLASSICAL=${build_classical} \
+    -e MONO=${build_mono} \
+    -e SCONS_CACHE=/root/.scons-cache \
     -v ${basedir}/godot-${godot_version}.tar.gz:/root/godot.tar.gz \
     -v ${basedir}/mono-glue:/root/mono-glue \
     -v ${basedir}/.scons-cache:/root/.scons-cache \
