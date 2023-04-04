@@ -200,6 +200,7 @@ run_build() {
     -e CLASSICAL=${build_classical} \
     -e MONO=${build_mono} \
     -e SCONS_CACHE=/root/.scons-cache \
+    -e SCONS_CACHE_LIMIT=5000 \
     -v ${basedir}/godot-${godot_version}.tar.gz:/root/godot.tar.gz \
     -v ${basedir}/mono-glue:/root/mono-glue \
     -v ${basedir}/.scons-cache:/root/.scons-cache \
